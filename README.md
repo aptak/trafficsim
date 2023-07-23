@@ -25,5 +25,7 @@ Vehicle class parameters:
  direction relative to north in degrees, i.e., 90 degrees = east.
     - For simplicity, quantize this is 45 deg. intervals intially.
  id - unique id for this vehicle
- vtype - what type of vehicle is this (if we don't subclass)
+ vtype - what type of vehicle is this (redundant if vehicles types are
+       subclassed but also can be useful to have this stored in baseclass)
  
+
