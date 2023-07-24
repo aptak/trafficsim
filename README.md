@@ -20,50 +20,68 @@ stopped traffic in front.  Allow for a response time for the first car at
 intersection to notice that light is green or traffic is clear at a stop sign.
 
 Vehicle class parameters:
- length (in feet)
- length_grid (in "pixels")
- x,y position of front of vehicle (in ft probably)
- x_grid, y_grid x,y position on traffic grid (integer indices)
+ len_ft = length (in feet)
+ len = length in grid "pixels"
+ x_ft,y_ft position of front of vehicle (in ft)
+ x, y x,y position on traffic grid (integer indices)
  direction relative to north in degrees, i.e., 90 degrees = east.
     - For simplicity, quantize this is 45 deg. intervals intially.
- speed speed in ft/time inveral
- speed_grid = speed in "pixels" / s
+ speed_ft speed in ft/time inveral
+ speed = speed in "pixels" / time interval
  id - unique id for this vehicle
  vtype - what type of vehicle is this (redundant if vehicles types are
        subclassed but also can be useful to have this stored in baseclass)
+
+Vehicle_car, van, truck, etc subclass of Vehicle parameters:
+static default_len_ft = used to simply track default length of each type of vehicle, later may have subclass fns.
  
 TrafficGrid class parameters:
 - x,y "image" of car positions, intersections, traffic lights and stop signs
 TrafficGrid functions
 - visualize: draw grid on screen probably using curses
 
-
-TrafficLight parameters:
+FlowControl = base class for what is controling flow of traffic through a position (typically intersection)
 - posn = x,y position on grid of traffic light
 - direction = always one of 0, 90, 180, 270
+
+
+TrafficLight public subclass of FlowControl  parameters:
 - current state = red, yellow or green
-- time since last change: elapsed time for current state
-- state_durations[] = total elapse time for each state
+- time_s = time in secs since last change: elapsed time for current state
+- time = time in time intervals since last change
+- state_durations_s[] = total duration in seconds for each state
+- state_durations[] = total duration in time intervals for each state
 
-StopSign parameters:
-- posn = x,y position on grid of traffic light
-- direction = always one of 0, 90, 180, 270
+StopSign public subclass of FlowControl parameters:
+- inherits x,y, direction
+- NumStopSigns = 1 (or could be, e.g., 4 for a four-way stop)
 
 Lane parameters:
 - posn = starting x,y position of lane
 - direction = 0,90,180,270
 - length = length in pixels of lane
+- speed_limit_mph = speed limit is miles per hour
+- speed_limit_fts = speed limit in feet per second
+- speed_limit = speed limits in pixels/time interval = speed_limit_fts * time_step_s / plate_scale
+
+Intersection parameters:
+- posn = x,y position on grid of center of intersection
+- lanes = vector of lanes that cross intersection
 
 TrafficSim parameters:
-- time step
+- time_step_s =  seconds per time interval
 - elapsed time / no. of iterations
-- grid of type TrafficGrid
+- grid = TrafficGrid
 - vehicles = vector<Vehicles>
-- Traffic_lights: position and directions of traffic lights
+- Traffic_lights: vector<TrafficLight>
+- plate_scale = ft/pixel
 
 TrafficSim functions
 - Step: move every vehicle to next position when possible, updating speeds, etc.
-- Step_vehicle: for given vehicle, move to next grid position if possible
+- StepVehicle: for given vehicle, move to next grid position if possible
 - Update
-
+- FtToPixels:convert feet to pixels
+- SecToTimeStep: convert seconds to time steps
+- ReadConfig: read in configuration file giving grid layout with lanes, intersections, stop lights and signs, no. and types of vehicles
+- 
 
